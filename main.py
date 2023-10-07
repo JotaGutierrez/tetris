@@ -113,6 +113,30 @@ class RightL(Piece):
         super().__init__(self.template, self.color)
 
 
+class RightS(Piece):
+    template = [
+        [0, 1, 1],
+        [1, 1, 0]
+    ]
+
+    color = "gray"
+
+    def __init__(self):
+        super().__init__(self.template, self.color)
+
+
+class LeftS(Piece):
+    template = [
+        [1, 1, 0],
+        [0, 1, 1]
+    ]
+
+    color = "gray"
+
+    def __init__(self):
+        super().__init__(self.template, self.color)
+
+
 class SemiCross(Piece):
     template = [
         [0, 1, 0],
@@ -126,7 +150,7 @@ class SemiCross(Piece):
 
 
 class Game:
-    piece_stack = [Square, LeftL, RightL, SemiCross, Line]
+    piece_stack = [Square, LeftL, RightL, SemiCross, Line, LeftS, RightS]
 
     current_piece = None
     current_piece_offset = [0, 0]
