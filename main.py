@@ -72,7 +72,7 @@ class Square(Piece):
         [1, 1]
     ]
 
-    color = "purple"
+    color = "blue"
 
     def __init__(self):
         super().__init__(self.template, self.color)
@@ -95,7 +95,7 @@ class LeftL(Piece):
         [1, 1, 1]
     ]
 
-    color = "orange"
+    color = "white"
 
     def __init__(self):
         super().__init__(self.template, self.color)
@@ -107,7 +107,7 @@ class RightL(Piece):
         [1, 1, 1]
     ]
 
-    color = "gray"
+    color = "magenta"
 
     def __init__(self):
         super().__init__(self.template, self.color)
@@ -119,7 +119,7 @@ class RightS(Piece):
         [1, 1, 0]
     ]
 
-    color = "gray"
+    color = "green"
 
     def __init__(self):
         super().__init__(self.template, self.color)
@@ -131,7 +131,7 @@ class LeftS(Piece):
         [0, 1, 1]
     ]
 
-    color = "gray"
+    color = "cyan"
 
     def __init__(self):
         super().__init__(self.template, self.color)
@@ -143,7 +143,7 @@ class SemiCross(Piece):
         [1, 1, 1]
     ]
 
-    color = "yellow"
+    color = "brown"
 
     def __init__(self):
         super().__init__(self.template, self.color)
@@ -307,7 +307,7 @@ class Board:
             for x in range(BOARD_X):
                 pygame.draw.rect(
                     screen,
-                    "white" if self.board[y][x] != 1 else 'purple',
+                    "black" if self.board[y][x] != 1 else 'purple',
                     pygame.Rect(x * PIECE_WIDTH, y * PIECE_WIDTH, PIECE_WIDTH, PIECE_WIDTH)
                 )
 
@@ -334,7 +334,7 @@ def game():
         if keys[pygame.K_s]:
             _game.rotate_right()
 
-        screen.fill("black")
+        screen.fill("blue")
 
         _game.tick()
         _game.display(screen)

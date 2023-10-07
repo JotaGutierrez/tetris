@@ -7,7 +7,7 @@ Then I thought, "maybe in 2 hours...".
 Said and done. In 2 hours we have:
 
 ### Features 
-* A 20*10 board (I don't know board original height yet, but I prefer this initial commit to be exactly how it was after 180 mins, bugs included)
+* A 20*10 board (It looks like this is the original board dimension)
 * all tetris pieces fall down as expected
 * board collisions
 * piece collisions
