@@ -91,8 +91,8 @@ class Line(Piece):
 
 class LeftL(Piece):
     template = [
-        [1, 0, 0, 0],
-        [1, 1, 1, 1]
+        [1, 0, 0],
+        [1, 1, 1]
     ]
 
     color = "orange"
@@ -103,8 +103,8 @@ class LeftL(Piece):
 
 class RightL(Piece):
     template = [
-        [0, 0, 0, 1],
-        [1, 1, 1, 1]
+        [0, 0, 1],
+        [1, 1, 1]
     ]
 
     color = "gray"
