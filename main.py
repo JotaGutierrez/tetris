@@ -1,3 +1,4 @@
+import copy
 from random import choice
 
 import numpy
@@ -154,19 +155,21 @@ class Game:
 
     current_piece = None
     current_piece_offset = [0, 0]
+    next_piece = None
 
     def __init__(self, board, score):
         self.score = score
         self.last_move = 0
         self.board = board
+        # Init first piece
+        self.next_piece = choice(self.piece_stack)()
         self.new_piece()
-
-        pygame.time.get_ticks()
 
     def new_piece(self):
         self.current_piece_offset = [0, 0]
-        piece = choice(self.piece_stack)
-        self.current_piece = piece()
+        self.current_piece = copy.copy(self.next_piece)
+
+        self.next_piece = choice(self.piece_stack)()
 
     def tick(self):
         if self.piece_will_collide():
@@ -181,6 +184,8 @@ class Game:
         self.board.display(screen)
         self.score.display(screen)
         self.current_piece.display(screen, self.current_piece_offset)
+        # draw next piece out of board bounds
+        self.next_piece.display(screen, [1, 11])
 
     def fall(self):
         self.current_piece_offset[0] += 1
