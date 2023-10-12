@@ -324,15 +324,15 @@ def game():
             if event.type == pygame.QUIT:
                 exit()
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            _game.move_left()
-        if keys[pygame.K_d]:
-            _game.move_right()
-        if keys[pygame.K_w]:
-            _game.rotate_left()
-        if keys[pygame.K_s]:
-            _game.rotate_right()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a:
+                    _game.move_left()
+                if event.key == pygame.K_d:
+                    _game.move_right()
+                if event.key == pygame.K_w:
+                    _game.rotate_left()
+                if event.key == pygame.K_s:
+                    _game.rotate_right()
 
         screen.fill("blue")
 
