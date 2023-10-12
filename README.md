@@ -12,12 +12,12 @@ Said and done. In 2 hours we have:
 * board collisions
 * piece collisions
 * piece rotation with pre-rotation collision detection
-* full lines gets cleared
+* full lines gets cleared (Buggy yet)
+* basic score
+* next piece preview
 
 ### Missing features
 * Game end and reset
-* Next piece view
-* Score 
 * Fall speed increase as score goes up
 
 ### Dependencies:
