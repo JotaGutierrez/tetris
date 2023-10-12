@@ -32,6 +32,29 @@ BOARD = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
+BOARD_COLORS = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+]
+
 
 class Piece:
 
@@ -266,12 +289,14 @@ class Score:
 
 class Board:
     board = BOARD
+    board_colors = BOARD_COLORS
 
     def consolidate(self, piece, offset):
         for x in range(len(piece.template)):
             for y in range(len(piece.template[x])):
                 if piece.template[x][y] == 1:
                     self.board[offset[0] + x][offset[1] + y] = piece.template[x][y]
+                    self.board_colors[offset[0] + x][offset[1] + y] = piece.color
 
     def will_collide(self, piece, offset):
         for x in range(len(piece.template)):
@@ -337,7 +362,7 @@ class Board:
             for x in range(BOARD_X):
                 pygame.draw.rect(
                     screen,
-                    "black" if self.board[y][x] != 1 else 'purple',
+                    "black" if self.board[y][x] != 1 else self.board_colors[y][x],
                     pygame.Rect(x * PIECE_WIDTH, y * PIECE_WIDTH, PIECE_WIDTH, PIECE_WIDTH)
                 )
 
