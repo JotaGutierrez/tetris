@@ -324,7 +324,7 @@ class Board:
                 remove_lines.append(y)
                 self.board[y] = [0 for i in range(BOARD_X)]
 
-        for line in remove_lines:
+        for line in sorted(remove_lines, reverse=True):
             del self.board[line]
 
         for _ in remove_lines:
