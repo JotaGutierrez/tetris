@@ -155,7 +155,8 @@ class Game:
     current_piece = None
     current_piece_offset = [0, 0]
 
-    def __init__(self, board):
+    def __init__(self, board, score):
+        self.score = score
         self.last_move = 0
         self.board = board
         self.new_piece()
@@ -178,6 +179,7 @@ class Game:
 
     def display(self, screen):
         self.board.display(screen)
+        self.score.display(screen)
         self.current_piece.display(screen, self.current_piece_offset)
 
     def fall(self):
@@ -187,9 +189,9 @@ class Game:
         if not self.board.will_collide_on_rotation(self.current_piece, self.current_piece_offset):
             self.current_piece.rotate_left()
 
-    def rotate_right(self):
-        if not self.board.will_collide_on_rotation(self.current_piece, self.current_piece_offset):
-            self.current_piece.rotate_right()
+    def force_fall(self):
+        self.fall()
+        self.last_move = pygame.time.get_ticks()
 
     def piece_will_collide(self):
         # out of lower bound?
@@ -202,7 +204,7 @@ class Game:
         return False
 
     def check_full_lines(self):
-        self.board.clean_full_lines()
+        self.score.add(self.board.clean_full_lines())
 
     def should_fall(self):
         if pygame.time.get_ticks() - self.last_move > 480:
@@ -234,6 +236,27 @@ class Game:
 
     def save_piece(self):
         self.board.consolidate(self.current_piece, self.current_piece_offset)
+
+
+class Score:
+    lines = 0
+    level = 1
+
+    def __init__(self, font):
+        self.font = font
+
+    def add(self, lines_count):
+        self.lines += lines_count
+        self.level = int(self.lines / 10 + 1)
+
+    def display(self, screen):
+        pygame.draw.rect(
+            screen,
+            'white',
+            pygame.Rect(200, 0, 200, 400)
+        )
+        self.font.render_to(screen, (220, 340), 'Level: ' + str(self.level), 'black')
+        self.font.render_to(screen, (220, 370), 'Lines: ' + str(self.lines), 'black')
 
 
 class Board:
@@ -302,6 +325,8 @@ class Board:
         for _ in remove_lines:
             self.board.insert(0, [0 for _ in range(BOARD_X)])
 
+        return len(remove_lines)
+
     def display(self, screen):
         for y in range(BOARD_Y):
             for x in range(BOARD_X):
@@ -314,10 +339,16 @@ class Board:
 
 def game():
     pygame.init()
+    pygame.freetype.init()
+
+    font = pygame.freetype.SysFont('Verdana', 16)
+
     screen = pygame.display.set_mode((1280, 720))
     clock = pygame.time.Clock()
+
     board = Board()
-    _game = Game(board)
+    score = Score(font)
+    _game = Game(board, score)
 
     while True:
         for event in pygame.event.get():
@@ -332,7 +363,7 @@ def game():
                 if event.key == pygame.K_w:
                     _game.rotate_left()
                 if event.key == pygame.K_s:
-                    _game.rotate_right()
+                    _game.force_fall()
 
         screen.fill("blue")
 

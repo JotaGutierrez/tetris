@@ -17,9 +17,8 @@ Said and done. In 2 hours we have:
 ### Missing features
 * Game end and reset
 * Next piece view
-* Score
-* Fall speed increase as score goes up 
-* Better move/rotate key management
+* Score 
+* Fall speed increase as score goes up
 
 ### Dependencies:
 * pygame for:
