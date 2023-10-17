@@ -9,6 +9,13 @@ BOARD_Y = 20
 
 PIECE_WIDTH = 20
 
+PLAYING = 1
+GAME_OVER = 2
+PAUSE = 3
+
+BLACK = 'black'
+WHITE = 'white'
+
 BOARD = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -33,26 +40,26 @@ BOARD = [
 ]
 
 BOARD_COLORS = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
+    [BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK],
 ]
 
 
@@ -119,7 +126,7 @@ class LeftL(Piece):
         [1, 1, 1]
     ]
 
-    color = "white"
+    color = WHITE
 
     def __init__(self):
         super().__init__(self.template, self.color)
@@ -180,7 +187,10 @@ class Game:
     current_piece_offset = [0, 0]
     next_piece = None
 
-    def __init__(self, board, score):
+    state = PLAYING
+
+    def __init__(self, board, score, font):
+        self.font = font
         self.score = score
         self.last_move = 0
         self.board = board
@@ -194,14 +204,20 @@ class Game:
 
         self.next_piece = choice(self.piece_stack)()
 
-    def tick(self):
         if self.piece_will_collide():
-            self.save_piece()
-            self.check_full_lines()
-            self.new_piece()
-        else:
-            if self.should_fall():
-                self.fall()
+            self.state = GAME_OVER
+
+    def update(self):
+        if self.state == PAUSE:
+            return
+        if self.state == PLAYING:
+            if self.piece_will_collide():
+                self.save_piece()
+                self.check_full_lines()
+                self.new_piece()
+            else:
+                if self.should_fall():
+                    self.fall()
 
     def display(self, screen):
         self.board.display(screen)
@@ -210,16 +226,27 @@ class Game:
         # draw next piece out of board bounds
         self.next_piece.display(screen, [1, 11])
 
+        if self.state == GAME_OVER:
+            pygame.draw.rect(
+                screen,
+                (200,200,200),
+                pygame.Rect(100, 150, 200, 100)
+            )
+            self.font.render_to(screen, (150, 190), 'GAME OVER', 'red')
+
     def fall(self):
-        self.current_piece_offset[0] += 1
+        if self.state == PLAYING:
+            self.current_piece_offset[0] += 1
 
     def rotate_left(self):
-        if not self.board.will_collide_on_rotation(self.current_piece, self.current_piece_offset):
-            self.current_piece.rotate_left()
+        if self.state == PLAYING:
+            if not self.board.will_collide_on_rotation(self.current_piece, self.current_piece_offset):
+                self.current_piece.rotate_left()
 
     def force_fall(self):
-        self.fall()
-        self.last_move = pygame.time.get_ticks()
+        if self.state == PLAYING:
+            self.fall()
+            self.last_move = pygame.time.get_ticks()
 
     def piece_will_collide(self):
         # out of lower bound?
@@ -241,29 +268,46 @@ class Game:
         return False
 
     def move_right(self):
-        # Lateral piece collision?
-        if self.board.will_collide_right(self.current_piece, self.current_piece_offset):
-            return
+        if self.state == PLAYING:
+            # Lateral piece collision?
+            if self.board.will_collide_right(self.current_piece, self.current_piece_offset):
+                return
 
-        # Board limits
-        if self.current_piece_offset[1] + 1 + self.current_piece.width < BOARD_X:
-            self.current_piece_offset[1] += 1
-        else:
-            self.current_piece_offset[1] = BOARD_X - self.current_piece.width
+            # Board limits
+            if self.current_piece_offset[1] + 1 + self.current_piece.width < BOARD_X:
+                self.current_piece_offset[1] += 1
+            else:
+                self.current_piece_offset[1] = BOARD_X - self.current_piece.width
 
     def move_left(self):
-        # Lateral piece collision?
-        if self.board.will_collide_left(self.current_piece, self.current_piece_offset):
-            return
+        if self.state == PLAYING:
+            # Lateral piece collision?
+            if self.board.will_collide_left(self.current_piece, self.current_piece_offset):
+                return
 
-        # Board limits
-        if self.current_piece_offset[1] - 1 >= 0:
-            self.current_piece_offset[1] -= 1
-        else:
-            self.current_piece_offset[1] = 0
+            # Board limits
+            if self.current_piece_offset[1] - 1 >= 0:
+                self.current_piece_offset[1] -= 1
+            else:
+                self.current_piece_offset[1] = 0
 
     def save_piece(self):
         self.board.consolidate(self.current_piece, self.current_piece_offset)
+
+    def start(self):
+        if self.state == PLAYING:
+            return
+
+        self.board.reset()
+        self.score.reset()
+        self.last_move = 0
+        self.next_piece = choice(self.piece_stack)()
+        self.new_piece()
+
+        self.state = PLAYING
+
+    def pause(self):
+        self.state = PAUSE if self.state != PAUSE else PLAYING
 
 
 class Score:
@@ -273,6 +317,10 @@ class Score:
     def __init__(self, font):
         self.font = font
 
+    def reset(self):
+        self.lines = 0
+        self.level = 0
+
     def add(self, lines_count):
         self.lines += lines_count
         self.level = int(self.lines / 10 + 1)
@@ -280,16 +328,23 @@ class Score:
     def display(self, screen):
         pygame.draw.rect(
             screen,
-            'white',
+            WHITE,
             pygame.Rect(200, 0, 200, 400)
         )
-        self.font.render_to(screen, (220, 340), 'Level: ' + str(self.level), 'black')
-        self.font.render_to(screen, (220, 370), 'Lines: ' + str(self.lines), 'black')
+        self.font.render_to(screen, (220, 340), 'Level: ' + str(self.level), BLACK)
+        self.font.render_to(screen, (220, 370), 'Lines: ' + str(self.lines), BLACK)
 
 
 class Board:
-    board = BOARD
-    board_colors = BOARD_COLORS
+    board = None
+    board_colors = None
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.board = copy.deepcopy(BOARD)
+        self.board_colors = copy.deepcopy(BOARD_COLORS)
 
     def consolidate(self, piece, offset):
         for x in range(len(piece.template)):
@@ -347,13 +402,14 @@ class Board:
         for y in range(BOARD_Y):
             if numpy.sum(self.board[y]) == 10:
                 remove_lines.append(y)
-                self.board[y] = [0 for i in range(BOARD_X)]
 
         for line in sorted(remove_lines, reverse=True):
-            del self.board[line]
+            self.board.pop(line)
+            self.board_colors.pop(line)
 
         for _ in remove_lines:
             self.board.insert(0, [0 for _ in range(BOARD_X)])
+            self.board_colors.insert(0, [BLACK for _ in range(BOARD_X)])
 
         return len(remove_lines)
 
@@ -362,7 +418,7 @@ class Board:
             for x in range(BOARD_X):
                 pygame.draw.rect(
                     screen,
-                    "black" if self.board[y][x] != 1 else self.board_colors[y][x],
+                    BLACK if self.board[y][x] != 1 else self.board_colors[y][x],
                     pygame.Rect(x * PIECE_WIDTH, y * PIECE_WIDTH, PIECE_WIDTH, PIECE_WIDTH)
                 )
 
@@ -378,7 +434,7 @@ def game():
 
     board = Board()
     score = Score(font)
-    _game = Game(board, score)
+    _game = Game(board, score, font)
 
     while True:
         for event in pygame.event.get():
@@ -394,10 +450,14 @@ def game():
                     _game.rotate_left()
                 if event.key == pygame.K_s:
                     _game.force_fall()
+                if event.key == pygame.K_SPACE:
+                    _game.start()
+                if event.key == pygame.K_p:
+                    _game.pause()
 
         screen.fill("blue")
 
-        _game.tick()
+        _game.update()
         _game.display(screen)
 
         pygame.display.flip()
